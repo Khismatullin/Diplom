@@ -28,11 +28,6 @@ namespace Diplom
             InitializeComponent();
         }
 
-        public void AddControlPlot(Control control)
-        {
-            Controls.Add(control);
-        }
-
         private void Form1_Load(object sender, EventArgs e)
         {
             int x, y, w, z;
@@ -151,16 +146,15 @@ namespace Diplom
 
         public class ChartOxiPlot : IChart
         {
-            public PlotView Plot = new PlotView();
-            public LineSeries lineSeries;
-            public LineSeries markerSeries;
+            private PlotView Plot = new PlotView();
+            private LineSeries lineSeries;
+            private LineSeries markerSeries;
             private Dictionary<DateTime, double> limitValues;
             private int counterVal;
 
-            public ChartOxiPlot(Form1 link, Point locPlot, Point sizePlot, string titleChart, Color color)
+            public ChartOxiPlot(Form1 linkForm1, Point locPlot, Point sizePlot, string titleChart, Color color)
             {
-                link.AddControlPlot(Plot);
-
+                linkForm1.Controls.Add(Plot);
                 Plot.Location = new System.Drawing.Point(locPlot.X, locPlot.Y);
                 Plot.Size = new System.Drawing.Size(sizePlot.X, sizePlot.Y);
 
