@@ -34,8 +34,10 @@
             this.toolStripDropDownButtonInfo = new System.Windows.Forms.ToolStripDropDownButton();
             this.информацияОСоздателеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
-            this.buttonLoadData = new System.Windows.Forms.Button();
+            this.buttonImportData = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.buttonExportData = new System.Windows.Forms.Button();
+            this.checkBoxNoise = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -96,25 +98,49 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Экспериментальные вычисления";
             // 
-            // buttonLoadData
+            // buttonImportData
             // 
-            this.buttonLoadData.Location = new System.Drawing.Point(16, 25);
-            this.buttonLoadData.Name = "buttonLoadData";
-            this.buttonLoadData.Size = new System.Drawing.Size(218, 53);
-            this.buttonLoadData.TabIndex = 3;
-            this.buttonLoadData.Text = "Загрузить показатели давления из файла";
-            this.buttonLoadData.UseVisualStyleBackColor = true;
-            this.buttonLoadData.Click += new System.EventHandler(this.buttonLoadData_Click);
+            this.buttonImportData.Location = new System.Drawing.Point(9, 50);
+            this.buttonImportData.Name = "buttonImportData";
+            this.buttonImportData.Size = new System.Drawing.Size(239, 53);
+            this.buttonImportData.TabIndex = 3;
+            this.buttonImportData.Text = "Импортировать показатели давления из файла";
+            this.buttonImportData.UseVisualStyleBackColor = true;
+            this.buttonImportData.Click += new System.EventHandler(this.buttonImportData_Click);
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.buttonLoadData);
-            this.groupBox1.Location = new System.Drawing.Point(650, 689);
+            this.groupBox1.Controls.Add(this.buttonExportData);
+            this.groupBox1.Controls.Add(this.checkBoxNoise);
+            this.groupBox1.Controls.Add(this.buttonImportData);
+            this.groupBox1.Location = new System.Drawing.Point(12, 689);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(255, 84);
+            this.groupBox1.Size = new System.Drawing.Size(503, 109);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Загрузка";
+            this.groupBox1.Text = "Импорт и экспорт";
+            // 
+            // buttonExportData
+            // 
+            this.buttonExportData.Location = new System.Drawing.Point(253, 50);
+            this.buttonExportData.Name = "buttonExportData";
+            this.buttonExportData.Size = new System.Drawing.Size(239, 53);
+            this.buttonExportData.TabIndex = 7;
+            this.buttonExportData.Text = "Экспортировать результаты в файл";
+            this.buttonExportData.UseVisualStyleBackColor = true;
+            this.buttonExportData.Click += new System.EventHandler(this.buttonExportData_Click);
+            // 
+            // checkBoxNoise
+            // 
+            this.checkBoxNoise.AutoSize = true;
+            this.checkBoxNoise.Checked = true;
+            this.checkBoxNoise.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxNoise.Location = new System.Drawing.Point(11, 25);
+            this.checkBoxNoise.Name = "checkBoxNoise";
+            this.checkBoxNoise.Size = new System.Drawing.Size(239, 24);
+            this.checkBoxNoise.TabIndex = 6;
+            this.checkBoxNoise.Text = "Добавить шумов к данным";
+            this.checkBoxNoise.UseVisualStyleBackColor = true;
             // 
             // label3
             // 
@@ -144,6 +170,7 @@
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -157,9 +184,11 @@
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButtonInfo;
         private System.Windows.Forms.ToolStripMenuItem информацияОСоздателеToolStripMenuItem;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button buttonLoadData;
+        private System.Windows.Forms.Button buttonImportData;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox checkBoxNoise;
+        private System.Windows.Forms.Button buttonExportData;
     }
 }
 

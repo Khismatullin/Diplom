@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OxyPlot.WindowsForms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,21 +11,31 @@ using System.Windows.Forms;
 using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.Axes;
-using OxyPlot.WindowsForms;
+using OxyPlot.Annotations;
 using System.Reflection;
 using ExcelObj = Microsoft.Office.Interop.Excel;
 using System.IO;
 using System.Threading;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace Diplom
 {
     public partial class Form1 : Form
     {
-        Maket maketCusum;
-        Maket maketPressure;
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern uint GetWindowThreadProcessId(int hWnd, ref int lpdwProcessId);
+
+        //declaration here for use their in events
+        View viewCusum;
+        View viewPressure;
+        Task[] tasksView;
+
+        //for include all .dll in one .exe
+        ConnectLibrary connectLibrary = new ConnectLibrary();
 
         public Form1()
-        {
+        {           
             InitializeComponent();
         }
 
@@ -47,26 +58,27 @@ namespace Diplom
                 Application.Exit();
         }
 
-        interface IDataLoader
+        interface IDataImport
         {
-            Dictionary<DateTime, double> LoadData(int value);
+            SortedDictionary<DateTime, double> LoadData(int value);
+            SortedDictionary<DateTime, double> GetValues();
             int GetCount();
             void DisposeResource();
         }
 
-        class LoaderExcel : IDataLoader
+        class ImportExcel : IDataImport
         {
             private ExcelObj.Application excelApp;
             private ExcelObj.Range ShtRange;
-            private Dictionary<DateTime, double> allDatesPressures;
+            private SortedDictionary<DateTime, double> allDatesPressures;
             private string dir;
 
-            public LoaderExcel()
+            public ImportExcel()
             {
                 Settings();
             }
 
-            public LoaderExcel(string d)
+            public ImportExcel(string d)
             {
                 dir = d;
                 Settings();
@@ -75,7 +87,7 @@ namespace Diplom
             public void Settings()
             {
                 excelApp = new ExcelObj.Application();
-                allDatesPressures = new Dictionary<DateTime, double>();
+                allDatesPressures = new SortedDictionary<DateTime, double>();
 
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.DefaultExt = "*.xls;*.xlsx";
@@ -95,11 +107,7 @@ namespace Diplom
                 ExcelObj.Worksheet NwSheet;
 
                 //open your excel file
-                workbook = excelApp.Workbooks.Open(ofd.FileName, Missing.Value,
-                Missing.Value, Missing.Value, Missing.Value, Missing.Value,
-                Missing.Value, Missing.Value, Missing.Value, Missing.Value,
-                Missing.Value, Missing.Value, Missing.Value, Missing.Value,
-                Missing.Value);
+                workbook = excelApp.Workbooks.Open(ofd.FileName);
 
                 //choose the first sheet(page)
                 NwSheet = (ExcelObj.Worksheet)workbook.Sheets.get_Item(1);
@@ -113,7 +121,12 @@ namespace Diplom
                 return ShtRange.Rows.Count;
             }
 
-            public Dictionary<DateTime, double> LoadData(int Rnum)
+            public SortedDictionary<DateTime, double> GetValues()
+            {
+                return allDatesPressures;
+            }
+
+            public SortedDictionary<DateTime, double> LoadData(int Rnum)
             {
                 //for store read values([0] - date, [1] - pressure)
                 double[] readDatePressure = new double[2];
@@ -141,7 +154,7 @@ namespace Diplom
 
         interface IChart
         {
-            void VisualizeData(Dictionary<DateTime, double> loadData, bool marker);
+            void VisualizeData(SortedDictionary<DateTime, double> loadData, bool marker);
         }
 
         public class ChartOxiPlot : IChart
@@ -149,7 +162,7 @@ namespace Diplom
             private PlotView Plot = new PlotView();
             private LineSeries lineSeries;
             private LineSeries markerSeries;
-            private Dictionary<DateTime, double> limitValues;
+            private SortedDictionary<DateTime, double> limitValues;
             private int counterVal;
 
             public ChartOxiPlot(Form1 linkForm1, Point locPlot, Point sizePlot, string titleChart, Color color)
@@ -202,11 +215,11 @@ namespace Diplom
                 };
                 Plot.Model.Series.Add(markerSeries);
 
-                limitValues = new Dictionary<DateTime, double>();
+                limitValues = new SortedDictionary<DateTime, double>();
                 counterVal = 0;
             }
 
-            public void VisualizeData(Dictionary<DateTime, double> loadData, bool marker)
+            public void VisualizeData(SortedDictionary<DateTime, double> loadData, bool marker)
             {
                 DataPoint dp = new DataPoint(DateTimeAxis.ToDouble(loadData.Keys.Last()), loadData.Values.Last());
 
@@ -214,9 +227,12 @@ namespace Diplom
                 counterVal++;
                 limitValues.Add(loadData.Keys.Last(), loadData.Values.Last());
 
-                //show only 50 values
-                if (counterVal >= 50)
+                //show only 1200 values
+                if (counterVal >= 1200)
+                {
                     lineSeries.Points.Remove(new DataPoint(DateTimeAxis.ToDouble(limitValues.Keys.First()), limitValues.Values.First()));
+                    limitValues.Remove(limitValues.Keys.First());
+                }
 
                 lineSeries.Points.Add(dp);
 
@@ -231,7 +247,7 @@ namespace Diplom
 
         interface IMethod
         {
-            Dictionary<DateTime, double> UseMethod(Dictionary<DateTime, double> allValues);
+            SortedDictionary<DateTime, double> UseMethod(SortedDictionary<DateTime, double> allValues);
             bool StopCondition { get; }
             string StopMessage { get; }
         }
@@ -239,10 +255,13 @@ namespace Diplom
         class MethodCusum : IMethod
         {
             private double N;
-            double b;
+            private double b;
             private int k;
             private double[] x;
-            private Dictionary<DateTime, double> timeY;
+            private double average;
+            private double estKsi;
+            private double ksi;
+            private SortedDictionary<DateTime, double> timeY;
             public bool StopCondition { get; set; }
             public string StopMessage { get; set; }
 
@@ -261,17 +280,13 @@ namespace Diplom
                 x = new double[k];
 
                 //y(t)
-                timeY = new Dictionary<DateTime, double>();
+                timeY = new SortedDictionary<DateTime, double>();
 
                 StopCondition = false;
             }
 
-            public Dictionary<DateTime, double> UseMethod(Dictionary<DateTime, double> allDatesPressures)
+            public SortedDictionary<DateTime, double> UseMethod(SortedDictionary<DateTime, double> allDatesPressures)
             {
-                double average = 0.0;
-                double estKsi = 0.0;
-                double ksi = 0.0;
-
                 //at first X = {P(ts), P(ts+1), ... P(tf)}
                 if (allDatesPressures.Count == k)
                 {
@@ -333,52 +348,193 @@ namespace Diplom
             }
         }
 
-        class Maket
+        interface IDeclineData
         {
-            private IDataLoader dataLoader;
+            SortedDictionary<DateTime, double> AddDecline(SortedDictionary<DateTime, double> loadData);
+        }
+
+        class NoiseDecline : IDeclineData
+        {
+            private Random randOne;
+            private Random randTwo;
+            private double v1;
+            private double v2;
+            private double r;
+            private double f;
+            private SortedDictionary<DateTime, double> noiseData;
+
+            public NoiseDecline()
+            {
+                randOne = new Random();
+                randTwo = new Random();
+                noiseData = new SortedDictionary<DateTime, double>();
+            }
+
+            public SortedDictionary<DateTime, double> AddDecline(SortedDictionary<DateTime, double> loadData)
+            {
+                //random noise with normal distribution
+                r = 1;
+                while(r >= 1)
+                {
+                    v1 = randOne.NextDouble();
+                    v2 = randTwo.NextDouble();
+                    r = v1 * v1 + v2 * v2;
+                }
+                f = Math.Sqrt(-2 * Math.Log(r)/2);
+                var noise = loadData.Values.Last() + v1*f;
+
+                noiseData.Add(loadData.Keys.Last(), noise);
+                return noiseData;
+            }
+        }
+
+        interface IDataExport
+        {
+            void Export(SortedDictionary<DateTime, double> d);
+        }
+
+        class ExportExcel : IDataExport
+        {
+            private ExcelObj.Application excelApp;
+            private ExcelObj.Workbook workBook;
+            private ExcelObj.Worksheet worksheet;
+            private string dirExport;
+
+            public ExportExcel(string d)
+            {
+                dirExport = d;
+                excelApp = new ExcelObj.Application();
+                workBook = excelApp.Workbooks.Open(dirExport);
+                worksheet = workBook.ActiveSheet as ExcelObj.Worksheet;
+            }
+
+            public void Export(SortedDictionary<DateTime, double> inputData)
+            {
+                int i = 1;
+                foreach(KeyValuePair<DateTime, double> item in inputData)
+                {
+                    worksheet.Cells[i, 1].Value = item.Key;
+                    worksheet.Cells[i, 2].Value = item.Value;
+                    i++;
+                }
+
+                workBook.SaveAs(dirExport);
+                CloseExcel();
+            }
+
+            private void CloseExcel()
+            {
+                if (excelApp != null)
+                {
+                    int excelProcessId = -1;
+                    GetWindowThreadProcessId(excelApp.Hwnd, ref excelProcessId);
+
+                    Marshal.ReleaseComObject(worksheet);
+                    workBook.Close();
+                    Marshal.ReleaseComObject(workBook);
+                    excelApp.Quit();
+                    Marshal.ReleaseComObject(excelApp);
+
+                    excelApp = null;
+                    try
+                    {
+                        Process process = Process.GetProcessById(excelProcessId);
+                        process.Kill();
+                    }
+                    finally { }
+                }
+            }            
+        }
+
+        class View
+        {
+            private IDataImport dataImport;
+            private IDeclineData declineData;
             private IMethod method;
-            private IChart graphics;
-            public int Count;
+            private IChart chart;
+            private IDataExport dataExport;
+            private SortedDictionary<DateTime, double> dataView;
 
-            public Maket(IDataLoader dl, IMethod m, IChart gr)
+            public View(IDataImport dl, IDeclineData d, IMethod m, IChart c, IDataExport e)
             {
-                dataLoader = dl;
+                dataImport = dl;
+                declineData = d;
                 method = m;
-                graphics = gr;
+                chart = c;
+                dataExport = e;
 
-                Count = dataLoader.GetCount();
+                dataView = new SortedDictionary<DateTime, double>();
             }
 
-            public Dictionary<DateTime, double> Load(int i)
+            public SortedDictionary<DateTime, double> Load(int i)
             {
-                return dataLoader.LoadData(i);
+                return dataImport.LoadData(i);
             }
 
-            public Dictionary<DateTime, double> UseMethod(Dictionary<DateTime, double> loadVal)
+            public SortedDictionary<DateTime, double> Decline(SortedDictionary<DateTime, double> loadData)
             {
-                return method.UseMethod(loadVal);
+                //because consistently transfer result along chain
+                if (declineData != null)
+                    return declineData.AddDecline(loadData);
+                else
+                    return loadData;
             }
 
-            public bool Output(Dictionary<DateTime, double> procVal)
+            public SortedDictionary<DateTime, double> UseMethod(SortedDictionary<DateTime, double> loadVal)
+            {
+                //because consistently transfer result along chain
+                if (method != null)
+                {
+                    var res = method.UseMethod(loadVal);
+                    
+                        Task task = new Task(() => 
+                        {
+                            if (res != null)
+                                dataView.Add(res.Keys.Last(), res.Values.Last());
+                        });
+                        task.Start();
+
+                    return res;
+                }
+                else
+                    return loadVal;
+            }
+
+            public bool Output(SortedDictionary<DateTime, double> procVal)
             {
                 if (procVal != null)
                 {
-                    if (method.StopCondition)
+                    if (method != null && method.StopCondition)
                     {
-                        graphics.VisualizeData(procVal, true);
+                        chart.VisualizeData(procVal, true);
                         MessageBox.Show(method.StopMessage, "Предупреждение!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return false;
                     }
                     else
-                        graphics.VisualizeData(procVal, false);
+                        chart.VisualizeData(procVal, false);
                 }
 
                 return true;
             }
 
+            public void Show()
+            {
+                //read and visualize adding by 1 value
+                for (int i = 1; i < dataImport.GetCount(); i++)
+                {
+                    if (Output(UseMethod(Decline(Load(i)))) == false)
+                        break;
+                }
+            }
+
+            public void ExportData()
+            {
+                dataExport.Export(dataView);
+            }
+
             public void DisposeMaketResource()
             {
-                dataLoader.DisposeResource();
+                dataImport.DisposeResource();
             }
         }
 
@@ -398,36 +554,63 @@ namespace Diplom
             Application.Exit();
         }
 
-        private void buttonLoadData_Click(object sender, EventArgs e)
+        private void buttonImportData_Click(object sender, EventArgs e)
         {
-            string directory = "D:\\MyYandexDisk\\YandexDisk\\CUSUM\\Practice2017\\data3.xlsx";
-            IDataLoader loaderExcel = new LoaderExcel(directory);
+            //protection from fool
+            checkBoxNoise.Enabled = false;
+            buttonImportData.Enabled = false;
+            buttonExportData.Enabled = false;
 
-            maketCusum = new Maket(loaderExcel, new MethodCusum(), new ChartOxiPlot(this, new Point(10, 40), new Point(500, 400), "y(t)", Color.DarkMagenta));
-            maketPressure = new Maket(new LoaderExcel(directory), new MethodCusum(), new ChartOxiPlot(this, new Point(530, 40), new Point(500, 400), "P(t)", Color.Blue));
+            string importDir = "D:\\MyYandexDisk\\YandexDisk\\CUSUM\\Practice2017\\data2.xlsx";
+            string exportDir = "D:\\MyYandexDisk\\YandexDisk\\CUSUM\\Practice2017\\results.xlsx";
+            IDeclineData declineDataC = null;
+            IDeclineData declineDataP = null;
 
-            Task task = new Task(() =>
+            //add noise if need
+            if (checkBoxNoise.Checked)
             {
-                //read and visualize adding by 1 value
-                for (int i = 1; i < maketCusum.Count; i++)
-                {
-                    var loadPressure = maketCusum.Load(i);
-                    if (maketCusum.Output(maketCusum.UseMethod(loadPressure)) == false)
-                        break;
+                declineDataC = new NoiseDecline();
+                declineDataP = new NoiseDecline();
+            }
 
-                    maketPressure.Output(loadPressure);
-                }
+            viewCusum = new View(new ImportExcel(importDir), declineDataC, new MethodCusum(), new ChartOxiPlot(this, new Point(10, 40), new Point(500, 400), "y(t)", Color.DarkMagenta), new ExportExcel(exportDir));
+            viewPressure = new View(new ImportExcel(importDir), declineDataP, null, new ChartOxiPlot(this, new Point(530, 40), new Point(500, 400), "P(t)", Color.Blue), new ExportExcel(exportDir));
+
+            //for not blocking UI-thread
+            tasksView = new Task[2]
+            {
+                new Task(()=>{ viewPressure.Show(); }),
+                 new Task(()=>{ viewCusum.Show(); }),
+            };
+            foreach (var item in tasksView)
+                item.Start();
+
+            //wait ending work tasks
+            Task taskWait = new Task(()=>
+            {
+                Task.WaitAll(tasksView);
+                checkBoxNoise.Enabled = true;
+                buttonImportData.Enabled = true;
+                buttonExportData.Enabled = true;
             });
-            task.Start();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (maketCusum != null)
-                maketCusum.DisposeMaketResource();
+            if (viewCusum != null)
+                viewCusum.DisposeMaketResource();
 
-            if (maketPressure != null)
-                maketPressure.DisposeMaketResource();
+            if (viewPressure != null)
+                viewPressure.DisposeMaketResource();
+        }
+
+        private void buttonExportData_Click(object sender, EventArgs e)
+        {
+            buttonExportData.Enabled = false;
+            if (viewCusum != null)
+                viewCusum.ExportData();
+
+            buttonExportData.Enabled = true;
         }
     }
 }
