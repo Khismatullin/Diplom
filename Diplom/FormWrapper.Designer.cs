@@ -46,6 +46,8 @@
             this.checkBoxOpenExportFile = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.textBoxParamK = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.labelB = new System.Windows.Forms.Label();
@@ -58,8 +60,6 @@
             this.trackBarMethodCusumParamN = new System.Windows.Forms.TrackBar();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.textBoxParamK = new System.Windows.Forms.TextBox();
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -227,7 +227,7 @@
             this.groupBox2.Controls.Add(this.checkBoxOpenExportFile);
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Controls.Add(this.textBoxExportFileName);
-            this.groupBox2.Location = new System.Drawing.Point(352, 689);
+            this.groupBox2.Location = new System.Drawing.Point(779, 689);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(343, 155);
             this.groupBox2.TabIndex = 7;
@@ -250,17 +250,34 @@
             this.groupBox3.Controls.Add(this.trackBarMethodCusumParamN);
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Location = new System.Drawing.Point(701, 689);
+            this.groupBox3.Location = new System.Drawing.Point(352, 689);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(410, 155);
             this.groupBox3.TabIndex = 11;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Параметры алгоритма";
             // 
+            // textBoxParamK
+            // 
+            this.textBoxParamK.Location = new System.Drawing.Point(326, 40);
+            this.textBoxParamK.Name = "textBoxParamK";
+            this.textBoxParamK.Size = new System.Drawing.Size(63, 26);
+            this.textBoxParamK.TabIndex = 11;
+            this.textBoxParamK.Text = "20";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(303, 44);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(19, 20);
+            this.label11.TabIndex = 22;
+            this.label11.Text = "K";
+            // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(73, 94);
+            this.label14.Location = new System.Drawing.Point(79, 94);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(14, 20);
             this.label14.TabIndex = 21;
@@ -269,7 +286,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(75, 39);
+            this.label13.Location = new System.Drawing.Point(81, 39);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(14, 20);
             this.label13.TabIndex = 20;
@@ -296,7 +313,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(231, 121);
+            this.label10.Location = new System.Drawing.Point(245, 121);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(49, 20);
             this.label10.TabIndex = 17;
@@ -305,16 +322,16 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(89, 62);
+            this.label9.Location = new System.Drawing.Point(103, 62);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(23, 20);
+            this.label9.Size = new System.Drawing.Size(32, 20);
             this.label9.TabIndex = 16;
-            this.label9.Text = "-1";
+            this.label9.Text = "-12";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(94, 121);
+            this.label8.Location = new System.Drawing.Point(108, 121);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(18, 20);
             this.label8.TabIndex = 15;
@@ -323,15 +340,15 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(243, 62);
+            this.label7.Location = new System.Drawing.Point(257, 62);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(18, 20);
+            this.label7.Size = new System.Drawing.Size(23, 20);
             this.label7.TabIndex = 14;
-            this.label7.Text = "0";
+            this.label7.Text = "-8";
             // 
             // trackBarMethodCusumParamB
             // 
-            this.trackBarMethodCusumParamB.Location = new System.Drawing.Point(91, 86);
+            this.trackBarMethodCusumParamB.Location = new System.Drawing.Point(105, 86);
             this.trackBarMethodCusumParamB.Maximum = 50;
             this.trackBarMethodCusumParamB.Name = "trackBarMethodCusumParamB";
             this.trackBarMethodCusumParamB.Size = new System.Drawing.Size(173, 69);
@@ -342,14 +359,14 @@
             // 
             // trackBarMethodCusumParamN
             // 
-            this.trackBarMethodCusumParamN.Location = new System.Drawing.Point(93, 32);
-            this.trackBarMethodCusumParamN.Maximum = 0;
-            this.trackBarMethodCusumParamN.Minimum = -100;
+            this.trackBarMethodCusumParamN.Location = new System.Drawing.Point(107, 32);
+            this.trackBarMethodCusumParamN.Maximum = -800;
+            this.trackBarMethodCusumParamN.Minimum = -1200;
             this.trackBarMethodCusumParamN.Name = "trackBarMethodCusumParamN";
             this.trackBarMethodCusumParamN.Size = new System.Drawing.Size(173, 69);
             this.trackBarMethodCusumParamN.TabIndex = 12;
             this.trackBarMethodCusumParamN.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.trackBarMethodCusumParamN.Value = -1;
+            this.trackBarMethodCusumParamN.Value = -1000;
             this.trackBarMethodCusumParamN.ValueChanged += new System.EventHandler(this.trackBarMethodCusumParamN_ValueChanged);
             // 
             // label6
@@ -369,23 +386,6 @@
             this.label5.Size = new System.Drawing.Size(25, 20);
             this.label5.TabIndex = 9;
             this.label5.Text = "N(";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(303, 44);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(19, 20);
-            this.label11.TabIndex = 22;
-            this.label11.Text = "K";
-            // 
-            // textBoxParamK
-            // 
-            this.textBoxParamK.Location = new System.Drawing.Point(326, 40);
-            this.textBoxParamK.Name = "textBoxParamK";
-            this.textBoxParamK.Size = new System.Drawing.Size(63, 26);
-            this.textBoxParamK.TabIndex = 11;
-            this.textBoxParamK.Text = "20";
             // 
             // FormWrapper
             // 

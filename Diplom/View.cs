@@ -120,6 +120,7 @@ namespace Diplom
         public void DisposeMaketResource()
         {
             dataImport.DisposeResource();
+            chart.DisposeChart();
             dataExport.DisposeResource();
         }
     }

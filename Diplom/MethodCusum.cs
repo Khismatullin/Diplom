@@ -22,7 +22,7 @@ namespace Diplom
         public MethodCusum(double valN, double valB, int valK)
         {
             //critical value (-10.01)
-            N = -10.01;
+            N = valN;
 
             //max measurement error (0.025)
             b = valB;
@@ -89,8 +89,6 @@ namespace Diplom
                     //save message
                     DateTime showDate = allDatesPressures.Keys.Last();
                     StopMessage = showDate.ToShortDateString() + " в " + showDate.TimeOfDay + " был обнаружен момент разладки!";
-
-                    return timeY;
                 }
                 else
                 {

@@ -14,12 +14,10 @@ namespace Diplom
         private PlotView Plot = new PlotView();
         private LineSeries lineSeries;
         private LineSeries markerSeries;
-        private SortedDictionary<DateTime, double> limitValues;
-        private int counterVal;
 
-        public ChartOxiPlot(FormWrapper linkForm1, Point locPlot, Point sizePlot, string titleName)
+        public ChartOxiPlot(FormWrapper linkForm, Point locPlot, Point sizePlot, string titleName)
         {
-            linkForm1.Controls.Add(Plot);
+            linkForm.Controls.Add(Plot);
             Plot.Location = new System.Drawing.Point(locPlot.X, locPlot.Y);
             Plot.Size = new System.Drawing.Size(sizePlot.X, sizePlot.Y);
 
@@ -65,9 +63,6 @@ namespace Diplom
                 Color = OxyColor.FromRgb(255, 255, 255)
             };
             Plot.Model.Series.Add(markerSeries);
-
-            limitValues = new SortedDictionary<DateTime, double>();
-            counterVal = 0;
         }
 
         public void VisualizeData(SortedDictionary<DateTime, double> loadData, bool marker)
@@ -102,6 +97,11 @@ namespace Diplom
 
             if(point.Count != 0 && line != null)
                 line.Points.Add(new DataPoint(DateTimeAxis.ToDouble(point.Keys.Last()), point.Values.Last()));
-        }       
+        }
+
+        public void DisposeChart()
+        {
+            Plot.Dispose();
+        }
     }
 }

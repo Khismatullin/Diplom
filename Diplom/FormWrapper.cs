@@ -82,7 +82,7 @@ namespace Diplom
                 declineDataP = new NoiseDecline();
             }
 
-            viewCusum = new View(new ImportExcel(importDir), declineDataC, methodCusum, new ChartOxiPlot(this, new Point(530, 40), new Point(500, 400), methodCusum.NameForSeries), new ExportExcel(exportDir, IsOpenExportFile));
+            viewCusum = new View(new ImportExcel(importDir), declineDataC, methodCusum, new ChartOxiPlot(this, new Point(520, 40), new Point(500, 400), methodCusum.NameForSeries), new ExportExcel(exportDir, IsOpenExportFile));
             viewPressure = new View(new ImportExcel(importDir), declineDataP, null, new ChartOxiPlot(this, new Point(10, 40), new Point(500, 400), null), new ExportExcel(exportDir, IsOpenExportFile));
 
             //for not blocking UI-thread
@@ -99,8 +99,6 @@ namespace Diplom
             {
                 Task.WaitAll(tasksView);
                 EnableControls(true);
-
-                Clear();
             });
             taskWait.Start();
         }
@@ -115,26 +113,31 @@ namespace Diplom
             //protection for fools
             EnableControls(false);
 
-            Task taskExport = new Task(() =>
+            Task[] taskExport = new Task[1]
             {
-                if (viewCusum != null)
-                    viewCusum.ExportData();
-            });
-            taskExport.Start();
+                new Task(()=>
+                {
+                    if (viewCusum != null)
+                        viewCusum.ExportData();
+                })
+            };
+            foreach (var item in taskExport)
+                item.Start();
 
             Task taskWait = new Task(() =>
             {
                 Task.WaitAll(taskExport);
                 EnableControls(true);
             });
+            taskWait.Start();
         }
 
         private void Clear()
         {
-            if (viewCusum != null)
+            if(viewCusum != null)
                 viewCusum.DisposeMaketResource();
 
-            if (viewPressure != null)
+            if(viewPressure != null)
                 viewPressure.DisposeMaketResource();
         }
 

@@ -9,5 +9,6 @@ namespace Diplom
         void VisualizeData(SortedDictionary<DateTime, double> loadData, bool marker);
         void AddPointOnLine(SortedDictionary<DateTime, double> data, object objLine);
         object AddLine(string titleName);
+        void DisposeChart();
     }
 }
