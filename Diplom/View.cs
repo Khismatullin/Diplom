@@ -11,24 +11,26 @@ namespace Diplom
         private IImport dataImport;
         private IDeclineData declineData;
         private IMethod method;
+        private IEvaluation evaluation;
         private IChart chart;
         private IExport dataExport;
         private SortedDictionary<DateTime, double> dataView;
 
-        public View(IImport dl, IDeclineData d, IMethod m, IChart c, IExport e)
+        public View(IImport dl, IDeclineData d, IMethod m, IEvaluation ev, IChart c, IExport e)
         {
             dataImport = dl;
             declineData = d;
             method = m;
+            evaluation = ev;
             chart = c;
             dataExport = e;
 
             dataView = new SortedDictionary<DateTime, double>();
         }
 
-        public SortedDictionary<DateTime, double> Load(int i)
+        public SortedDictionary<DateTime, double> Import(int i)
         {
-            return dataImport.LoadData(i);
+            return dataImport.ImportData(i);
         }
 
         public SortedDictionary<DateTime, double> Decline(SortedDictionary<DateTime, double> loadData)
@@ -61,18 +63,20 @@ namespace Diplom
                 return loadVal;
         }
 
-        public SortedDictionary<DateTime, double> OtherCalculationsA()
+        public SortedDictionary<DateTime, double> Evaluate(SortedDictionary<DateTime, double> loadVal)
         {
-            if (method != null)
-                return method.GetCalculationsA();
-            else
-                return null;
+            if(evaluation != null)
+            {
+                evaluation.Evaluate(loadVal);
+            }
+
+            return loadVal;
         }
 
-        public SortedDictionary<DateTime, double> OtherCalculationsB()
+        public SortedDictionary<DateTime, double> OtherCalculations()
         {
             if (method != null)
-                return method.GetCalculationsB();
+                return method.GetOtherCalculations();
             else
                 return null;
         }
@@ -84,7 +88,7 @@ namespace Diplom
                 if (method != null && method.StopCondition)
                 {
                     chart.VisualizeData(procVal, true);
-                    MessageBox.Show(method.StopMessage, "Предупреждение!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(method.StopMessage + "\nВероятность обнаружения утечки составляет " + evaluation.evaluation + " %.", "Предупреждение!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return false;
                 }
                 else
@@ -98,30 +102,30 @@ namespace Diplom
         {
             object line = null;
             if (method != null)
-                line = chart.AddLine(method.SetAdditionallyNameForSeriesA());
+                line = chart.AddLine(method.SetOtherNameForSeries());
 
             //read and visualize adding by 1 value
             for (int i = 1; i < dataImport.GetCount(); i++)
             {
-                if (Output(UseMethod(Decline(Load(i)))) == false)
+                if (Output(Evaluate(UseMethod(Decline(Import(i))))) == false)
                     break;
 
                 //additionally series
                 if(method != null)
-                    chart.AddPointOnLine(OtherCalculationsA(), line);
+                    chart.AddPointOnLine(OtherCalculations(), line);
             }
         }
 
         public void ExportData()
         {
-            dataExport.Export(dataView);
+            dataExport.ExportData(dataView);
         }
 
-        public void DisposeMaketResource()
+        public void DisposeView()
         {
-            dataImport.DisposeResource();
+            dataImport.DisposeImport();
             chart.DisposeChart();
-            dataExport.DisposeResource();
+            dataExport.DisposeExport();
         }
     }
 }

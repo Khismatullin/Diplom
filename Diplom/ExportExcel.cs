@@ -10,45 +10,40 @@ namespace Diplom
 {
     class ExportExcel : IExport
     {
-        [DllImport("user32.dll", SetLastError = true)]
-        static extern uint GetWindowThreadProcessId(int hWnd, ref int lpdwProcessId);
-
         private ExcelObj.Application excelApp;
-        private ExcelObj.Workbook workBook;
-        private ExcelObj.Worksheet worksheet;
-        private string dirExport;
+        private string dir;
         private bool IsOpenExportFile = false;
 
         public ExportExcel(string d, bool o)
         {
-            dirExport = d;
+            dir = d;
             IsOpenExportFile = o;
-            Settings();
+            SettingsExportExcel();
         }
 
         public ExportExcel()
         {
-            dirExport = null;
+            dir = null;
         }
 
-        public void Settings()
+        public void SettingsExportExcel()
         {
             if(excelApp == null)
                 excelApp = new ExcelObj.Application();
         }
 
-        public void Export(SortedDictionary<DateTime, double> inputData)
-        {            
-            workBook = excelApp.Workbooks.Open(dirExport);
+        public void ExportData(SortedDictionary<DateTime, double> inputData)
+        {
+            ExcelObj.Workbook workBook = excelApp.Workbooks.Open(dir);
             excelApp.Columns.ColumnWidth = 15;
 
             //need be here
-            worksheet = workBook.ActiveSheet as ExcelObj.Worksheet;         
+            ExcelObj.Worksheet worksheet = workBook.ActiveSheet as ExcelObj.Worksheet;         
 
             //initialize here, if not selected dirExport
             Task taskDirExport = new Task(() =>
             {
-                if (dirExport == null)
+                if (dir == null)
                 {
                     OpenFileDialog ofd = new OpenFileDialog();
                     ofd.Filter = ofd.Filter = "Excel Sheet(*.xlsx)|*.xlsx";
@@ -57,9 +52,9 @@ namespace Diplom
                     if (ofd.ShowDialog() != DialogResult.OK)
                         Application.Exit();
                     else
-                        dirExport = ofd.FileName;
+                        dir = ofd.FileName;
 
-                    Settings();
+                    SettingsExportExcel();
                 }
             });
             taskDirExport.Start();
@@ -73,37 +68,14 @@ namespace Diplom
                 i++;
             }
 
-            workBook.SaveAs(dirExport);
+            workBook.SaveAs(dir);
 
             //show user
             if(IsOpenExportFile)
                 excelApp.Visible = true;
         }
 
-        private void CloseExcel()
-        {
-            if (excelApp != null)
-            {
-                int excelProcessId = -1;
-                GetWindowThreadProcessId(excelApp.Hwnd, ref excelProcessId);
-
-                Marshal.ReleaseComObject(worksheet);
-                workBook.Close();
-                Marshal.ReleaseComObject(workBook);
-                excelApp.Quit();
-                Marshal.ReleaseComObject(excelApp);
-
-                excelApp = null;
-                try
-                {
-                    Process process = Process.GetProcessById(excelProcessId);
-                    process.Kill();
-                }
-                finally { }
-            }
-        }
-
-        public void DisposeResource()
+        public void DisposeExport()
         {
             if(excelApp != null)
                 excelApp.Quit();

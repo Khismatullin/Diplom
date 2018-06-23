@@ -11,15 +11,16 @@ namespace Diplom
 {
     public class ChartOxiPlot : IChart
     {
-        private PlotView Plot = new PlotView();
+        private PlotView Plot;
         private LineSeries lineSeries;
         private LineSeries markerSeries;
 
         public ChartOxiPlot(FormWrapper linkForm, Point locPlot, Point sizePlot, string titleName)
         {
+            Plot = new PlotView();
             linkForm.Controls.Add(Plot);
-            Plot.Location = new System.Drawing.Point(locPlot.X, locPlot.Y);
-            Plot.Size = new System.Drawing.Size(sizePlot.X, sizePlot.Y);
+            Plot.Location = new Point(locPlot.X, locPlot.Y);
+            Plot.Size = new Size(sizePlot.X, sizePlot.Y);
 
             Plot.Model = new PlotModel
             {
@@ -67,13 +68,11 @@ namespace Diplom
 
         public void VisualizeData(SortedDictionary<DateTime, double> loadData, bool marker)
         {
-            DataPoint dp = new DataPoint(DateTimeAxis.ToDouble(loadData.Keys.Last()), loadData.Values.Last());
-
-            lineSeries.Points.Add(dp);
+            AddPointOnLine(loadData, lineSeries);
 
             //marker 1 value
             if (marker == true)
-                markerSeries.Points.Add(dp);
+                AddPointOnLine(loadData, markerSeries);
 
             //for update chart
             Plot.InvalidatePlot(true);

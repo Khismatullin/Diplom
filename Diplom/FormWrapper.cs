@@ -3,13 +3,14 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using System.IO;
 
 namespace Diplom
 {
     public partial class FormWrapper : Form
     {
         //declaration here for use their in events
-        View viewCusum;
+        View viewModifyCUSUM;
         View viewPressure;
 
         //for include all .dll in one .exe
@@ -20,16 +21,16 @@ namespace Diplom
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void FormWrapper_Load(object sender, EventArgs e)
         {
             int x, y, w, z;
             ThreadPool.GetMinThreads(out y, out x);
-            ThreadPool.SetMinThreads(100000, x);
+            ThreadPool.SetMinThreads(1000, x);
             ThreadPool.GetMaxThreads(out w, out z);
-            ThreadPool.SetMaxThreads(300000, z);
+            ThreadPool.SetMaxThreads(3000, z);
 
             //handler of hot keys (need set propreties Form.KeyPreview as "true")
-            this.KeyUp += new KeyEventHandler(HotKeys);
+            KeyDown += new KeyEventHandler(HotKeys);
 
             ChangeLabels();
         }
@@ -39,6 +40,14 @@ namespace Diplom
             //exit button (ESC)
             if (e.KeyCode.ToString() == "Escape")
                 Application.Exit();
+
+            //import data from file (CTRL + O)
+            if (e.Control && e.KeyCode == Keys.O)
+                импортироватьДанныеИзФайлаToolStripMenuItem_Click(sender, e);
+
+            //export data from file (CTRL + S)
+            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.S)
+                экспортироватьРезультатыВФайлToolStripMenuItem_Click(sender, e);
         }       
 
         private void информацияОСоздателеToolStripMenuItem_Click(object sender, EventArgs e)
@@ -57,6 +66,24 @@ namespace Diplom
             Application.Exit();
         }
 
+        string CheckDirOnExist(string s, Control c)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.FileName = s;
+
+            if (!File.Exists(ofd.FileName))
+            {
+                MessageBox.Show("Файл " + ofd.SafeFileName + " не найден в данной директории!", "Информирование пользователя", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                while (ofd.ShowDialog() != DialogResult.OK)
+                    ofd.ShowDialog();
+
+                c.Text = ofd.SafeFileName;
+                return ofd.FileName;
+            }
+            else
+                return s;            
+        }
+
         private void buttonImportData_Click(object sender, EventArgs e)
         {
             //clear past plots if there is
@@ -67,29 +94,34 @@ namespace Diplom
 
             string importDir = "D:\\MyYandexDisk\\YandexDisk\\CUSUM\\Practice2017\\" + textBoxImportFileName.Text;
             string exportDir = "D:\\MyYandexDisk\\YandexDisk\\CUSUM\\Practice2017\\" + textBoxExportFileName.Text;
+
+            //check ahead
+            importDir = CheckDirOnExist(importDir, textBoxImportFileName);
+            exportDir = CheckDirOnExist(exportDir, textBoxExportFileName);
+
             IDeclineData declineDataC = null;
             IDeclineData declineDataP = null;
             bool IsOpenExportFile = checkBoxOpenExportFile.Checked;
             double N = Convert.ToDouble(labelN.Text);
             double b = Convert.ToDouble(labelB.Text);
             int k = Convert.ToInt32(textBoxParamK.Text);
-            IMethod methodCusum = new MethodCusum(N, b, k);
+            IMethod methodModifyCUSUM = new MethodModifyCUSUM(N, b, k);
 
             //add noise if need
             if (checkBoxNoise.Checked)
             {
-                declineDataC = new NoiseDecline();
-                declineDataP = new NoiseDecline();
+                declineDataC = new DeclineNoise();
+                declineDataP = new DeclineNoise();
             }
-
-            viewCusum = new View(new ImportExcel(importDir), declineDataC, methodCusum, new ChartOxiPlot(this, new Point(520, 40), new Point(500, 400), methodCusum.NameForSeries), new ExportExcel(exportDir, IsOpenExportFile));
-            viewPressure = new View(new ImportExcel(importDir), declineDataP, null, new ChartOxiPlot(this, new Point(10, 40), new Point(500, 400), null), new ExportExcel(exportDir, IsOpenExportFile));
+            
+            viewModifyCUSUM = new View(new ImportExcel(importDir), declineDataC, methodModifyCUSUM, new EvaluationPoisson(), new ChartOxiPlot(this, new Point(520, 40), new Point(500, 400), methodModifyCUSUM.NameForSeries), new ExportExcel(exportDir, IsOpenExportFile));
+            viewPressure = new View(new ImportExcel(importDir), declineDataP, null, new EvaluationPoisson(), new ChartOxiPlot(this, new Point(10, 40), new Point(500, 400), null), new ExportExcel(exportDir, IsOpenExportFile));
 
             //for not blocking UI-thread
             Task[] tasksView = new Task[2]
             {
                 new Task(()=>{ viewPressure.ShowResults(); }),
-                 new Task(()=>{ viewCusum.ShowResults(); }),
+                 new Task(()=>{ viewModifyCUSUM.ShowResults(); }),
             };
             foreach (var item in tasksView)
                 item.Start();
@@ -117,8 +149,10 @@ namespace Diplom
             {
                 new Task(()=>
                 {
-                    if (viewCusum != null)
-                        viewCusum.ExportData();
+                    if (viewModifyCUSUM != null)
+                        viewModifyCUSUM.ExportData();
+                    else
+                        MessageBox.Show("Невозможно экспортировать результаты в файл, так как не был выполнен импорт исходных данных !", "Информирование пользователя", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 })
             };
             foreach (var item in taskExport)
@@ -134,11 +168,11 @@ namespace Diplom
 
         private void Clear()
         {
-            if(viewCusum != null)
-                viewCusum.DisposeMaketResource();
+            if(viewModifyCUSUM != null)
+                viewModifyCUSUM.DisposeView();
 
             if(viewPressure != null)
-                viewPressure.DisposeMaketResource();
+                viewPressure.DisposeView();
         }
 
         private void EnableControls(bool enable)
@@ -156,6 +190,9 @@ namespace Diplom
                 trackBarMethodCusumParamN.Enabled = true;
                 trackBarMethodCusumParamB.Enabled = true;
                 textBoxParamK.Enabled = true;
+
+                buttonChooseImportFile.Enabled = true;
+                buttonChooseExportFile.Enabled = true;
             }
             else
             {
@@ -170,6 +207,9 @@ namespace Diplom
                 trackBarMethodCusumParamN.Enabled = false;
                 trackBarMethodCusumParamB.Enabled = false;
                 textBoxParamK.Enabled = false;
+
+                buttonChooseImportFile.Enabled = false;
+                buttonChooseExportFile.Enabled = false;
             }
         }
 
@@ -179,14 +219,50 @@ namespace Diplom
             labelB.Text = (Convert.ToDouble(trackBarMethodCusumParamB.Value) / 1000).ToString();
         }
 
-        private void trackBarMethodCusumParamN_ValueChanged(object sender, EventArgs e)
+        private void trackBarParamN_ValueChanged(object sender, EventArgs e)
         {
             ChangeLabels();
         }
 
-        private void trackBarMethodCusumParamB_ValueChanged(object sender, EventArgs e)
+        private void trackBarParamB_ValueChanged(object sender, EventArgs e)
         {
             ChangeLabels();
+        }
+
+        private void buttonChooseImportFile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.DefaultExt = "*.xls;*.xlsx";
+            ofd.Filter = "Excel Sheet(*.xlsx)|*.xlsx";
+            ofd.Title = "Выберите документ для импорта данных";
+
+            //user selected FileName
+            if (ofd.ShowDialog() == DialogResult.OK)
+                textBoxImportFileName.Text = ofd.SafeFileName;
+        }
+
+        private void buttonChooseExportFile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.DefaultExt = "*.xls;*.xlsx";
+            ofd.Filter = "Excel Sheet(*.xlsx)|*.xlsx";
+            ofd.Title = "Выберите документ для экспорта данных";
+
+            //user selected FileName
+            if (ofd.ShowDialog() == DialogResult.OK)
+                textBoxExportFileName.Text = ofd.SafeFileName;
+        }
+
+        private void импортироватьДанныеИзФайлаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            buttonChooseImportFile_Click(sender, e);
+            buttonImportData_Click(sender, e);
+        }
+
+        private void экспортироватьРезультатыВФайлToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            buttonChooseExportFile_Click(sender, e);
+            buttonExportData_Click(sender, e);
         }
     }
 }

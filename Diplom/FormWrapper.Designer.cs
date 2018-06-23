@@ -30,12 +30,15 @@
         {
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButtonFile = new System.Windows.Forms.ToolStripDropDownButton();
+            this.импортироватьДанныеИзФайлаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.экспортироватьРезультатыВФайлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButtonInfo = new System.Windows.Forms.ToolStripDropDownButton();
             this.информацияОСоздателеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.buttonImportData = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.checkBoxNoise = new System.Windows.Forms.CheckBox();
+            this.buttonChooseImportFile = new System.Windows.Forms.Button();
             this.textBoxImportFileName = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.buttonExportData = new System.Windows.Forms.Button();
@@ -45,6 +48,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.checkBoxOpenExportFile = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.buttonChooseExportFile = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.textBoxParamK = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -76,7 +80,7 @@
             this.toolStripDropDownButtonInfo});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1469, 32);
+            this.toolStrip1.Size = new System.Drawing.Size(1548, 32);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -84,16 +88,32 @@
             // 
             this.toolStripButtonFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButtonFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.импортироватьДанныеИзФайлаToolStripMenuItem,
+            this.экспортироватьРезультатыВФайлToolStripMenuItem,
             this.выходToolStripMenuItem});
             this.toolStripButtonFile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonFile.Name = "toolStripButtonFile";
             this.toolStripButtonFile.Size = new System.Drawing.Size(71, 29);
             this.toolStripButtonFile.Text = "Файл";
             // 
+            // импортироватьДанныеИзФайлаToolStripMenuItem
+            // 
+            this.импортироватьДанныеИзФайлаToolStripMenuItem.Name = "импортироватьДанныеИзФайлаToolStripMenuItem";
+            this.импортироватьДанныеИзФайлаToolStripMenuItem.Size = new System.Drawing.Size(472, 30);
+            this.импортироватьДанныеИзФайлаToolStripMenuItem.Text = "Импортировать данные из файла (CTRL + O)";
+            this.импортироватьДанныеИзФайлаToolStripMenuItem.Click += new System.EventHandler(this.импортироватьДанныеИзФайлаToolStripMenuItem_Click);
+            // 
+            // экспортироватьРезультатыВФайлToolStripMenuItem
+            // 
+            this.экспортироватьРезультатыВФайлToolStripMenuItem.Name = "экспортироватьРезультатыВФайлToolStripMenuItem";
+            this.экспортироватьРезультатыВФайлToolStripMenuItem.Size = new System.Drawing.Size(472, 30);
+            this.экспортироватьРезультатыВФайлToolStripMenuItem.Text = "Экспортировать результаты в файл (CTRL + S)";
+            this.экспортироватьРезультатыВФайлToolStripMenuItem.Click += new System.EventHandler(this.экспортироватьРезультатыВФайлToolStripMenuItem_Click);
+            // 
             // выходToolStripMenuItem
             // 
             this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
-            this.выходToolStripMenuItem.Size = new System.Drawing.Size(193, 30);
+            this.выходToolStripMenuItem.Size = new System.Drawing.Size(472, 30);
             this.выходToolStripMenuItem.Text = "Выход (ESC)";
             this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
             // 
@@ -118,7 +138,7 @@
             // 
             this.buttonImportData.Location = new System.Drawing.Point(6, 92);
             this.buttonImportData.Name = "buttonImportData";
-            this.buttonImportData.Size = new System.Drawing.Size(314, 53);
+            this.buttonImportData.Size = new System.Drawing.Size(421, 53);
             this.buttonImportData.TabIndex = 3;
             this.buttonImportData.Text = "Импортировать показатели давления из файла";
             this.buttonImportData.UseVisualStyleBackColor = true;
@@ -127,12 +147,13 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.checkBoxNoise);
+            this.groupBox1.Controls.Add(this.buttonChooseImportFile);
             this.groupBox1.Controls.Add(this.textBoxImportFileName);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.buttonImportData);
-            this.groupBox1.Location = new System.Drawing.Point(12, 689);
+            this.groupBox1.Location = new System.Drawing.Point(22, 689);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(334, 155);
+            this.groupBox1.Size = new System.Drawing.Size(440, 155);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Импорт";
@@ -146,6 +167,16 @@
             this.checkBoxNoise.TabIndex = 6;
             this.checkBoxNoise.Text = "Добавить шум к данным";
             this.checkBoxNoise.UseVisualStyleBackColor = true;
+            // 
+            // buttonChooseImportFile
+            // 
+            this.buttonChooseImportFile.Location = new System.Drawing.Point(326, 26);
+            this.buttonChooseImportFile.Name = "buttonChooseImportFile";
+            this.buttonChooseImportFile.Size = new System.Drawing.Size(101, 35);
+            this.buttonChooseImportFile.TabIndex = 12;
+            this.buttonChooseImportFile.Text = "Выбрать";
+            this.buttonChooseImportFile.UseVisualStyleBackColor = true;
+            this.buttonChooseImportFile.Click += new System.EventHandler(this.buttonChooseImportFile_Click);
             // 
             // textBoxImportFileName
             // 
@@ -168,7 +199,7 @@
             // 
             this.buttonExportData.Location = new System.Drawing.Point(15, 92);
             this.buttonExportData.Name = "buttonExportData";
-            this.buttonExportData.Size = new System.Drawing.Size(315, 53);
+            this.buttonExportData.Size = new System.Drawing.Size(426, 53);
             this.buttonExportData.TabIndex = 7;
             this.buttonExportData.Text = "Экспортировать результаты в файл";
             this.buttonExportData.UseVisualStyleBackColor = true;
@@ -179,18 +210,18 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(268, 32);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(257, 20);
+            this.label3.Size = new System.Drawing.Size(248, 20);
             this.label3.TabIndex = 5;
-            this.label3.Text = "Показатели датчиков давления";
+            this.label3.Text = "Показатели датчика давления";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1035, 32);
+            this.label2.Location = new System.Drawing.Point(1063, 32);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(264, 20);
+            this.label2.Size = new System.Drawing.Size(189, 20);
             this.label2.TabIndex = 6;
-            this.label2.Text = "Экспериментальные вычисления";
+            this.label2.Text = "Вычисления алгоритма";
             // 
             // textBoxExportFileName
             // 
@@ -223,16 +254,27 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.buttonChooseExportFile);
             this.groupBox2.Controls.Add(this.buttonExportData);
             this.groupBox2.Controls.Add(this.checkBoxOpenExportFile);
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Controls.Add(this.textBoxExportFileName);
-            this.groupBox2.Location = new System.Drawing.Point(779, 689);
+            this.groupBox2.Location = new System.Drawing.Point(890, 689);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(343, 155);
+            this.groupBox2.Size = new System.Drawing.Size(452, 155);
             this.groupBox2.TabIndex = 7;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Экспорт";
+            // 
+            // buttonChooseExportFile
+            // 
+            this.buttonChooseExportFile.Location = new System.Drawing.Point(340, 26);
+            this.buttonChooseExportFile.Name = "buttonChooseExportFile";
+            this.buttonChooseExportFile.Size = new System.Drawing.Size(101, 35);
+            this.buttonChooseExportFile.TabIndex = 13;
+            this.buttonChooseExportFile.Text = "Выбрать";
+            this.buttonChooseExportFile.UseVisualStyleBackColor = true;
+            this.buttonChooseExportFile.Click += new System.EventHandler(this.buttonChooseExportFile_Click);
             // 
             // groupBox3
             // 
@@ -250,7 +292,7 @@
             this.groupBox3.Controls.Add(this.trackBarMethodCusumParamN);
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Location = new System.Drawing.Point(352, 689);
+            this.groupBox3.Location = new System.Drawing.Point(471, 689);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(410, 155);
             this.groupBox3.TabIndex = 11;
@@ -324,9 +366,9 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(103, 62);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(32, 20);
+            this.label9.Size = new System.Drawing.Size(23, 20);
             this.label9.TabIndex = 16;
-            this.label9.Text = "-12";
+            this.label9.Text = "-1";
             // 
             // label8
             // 
@@ -342,9 +384,9 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(257, 62);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(23, 20);
+            this.label7.Size = new System.Drawing.Size(18, 20);
             this.label7.TabIndex = 14;
-            this.label7.Text = "-8";
+            this.label7.Text = "0";
             // 
             // trackBarMethodCusumParamB
             // 
@@ -355,19 +397,19 @@
             this.trackBarMethodCusumParamB.TabIndex = 13;
             this.trackBarMethodCusumParamB.TickStyle = System.Windows.Forms.TickStyle.None;
             this.trackBarMethodCusumParamB.Value = 25;
-            this.trackBarMethodCusumParamB.ValueChanged += new System.EventHandler(this.trackBarMethodCusumParamB_ValueChanged);
+            this.trackBarMethodCusumParamB.ValueChanged += new System.EventHandler(this.trackBarParamB_ValueChanged);
             // 
             // trackBarMethodCusumParamN
             // 
             this.trackBarMethodCusumParamN.Location = new System.Drawing.Point(107, 32);
-            this.trackBarMethodCusumParamN.Maximum = -800;
-            this.trackBarMethodCusumParamN.Minimum = -1200;
+            this.trackBarMethodCusumParamN.Maximum = 0;
+            this.trackBarMethodCusumParamN.Minimum = -100;
             this.trackBarMethodCusumParamN.Name = "trackBarMethodCusumParamN";
             this.trackBarMethodCusumParamN.Size = new System.Drawing.Size(173, 69);
             this.trackBarMethodCusumParamN.TabIndex = 12;
             this.trackBarMethodCusumParamN.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.trackBarMethodCusumParamN.Value = -1000;
-            this.trackBarMethodCusumParamN.ValueChanged += new System.EventHandler(this.trackBarMethodCusumParamN_ValueChanged);
+            this.trackBarMethodCusumParamN.Value = -40;
+            this.trackBarMethodCusumParamN.ValueChanged += new System.EventHandler(this.trackBarParamN_ValueChanged);
             // 
             // label6
             // 
@@ -391,7 +433,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1469, 856);
+            this.ClientSize = new System.Drawing.Size(1548, 856);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.label2);
@@ -399,12 +441,14 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.toolStrip1);
             this.KeyPreview = true;
+            this.MaximumSize = new System.Drawing.Size(1570, 912);
+            this.MinimumSize = new System.Drawing.Size(1570, 912);
             this.Name = "FormWrapper";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Программное обеспечение для обнаружения утечек нефтепродуктов в трубопроводе";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Load += new System.EventHandler(this.FormWrapper_Load);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -454,6 +498,10 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox textBoxParamK;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button buttonChooseImportFile;
+        private System.Windows.Forms.Button buttonChooseExportFile;
+        private System.Windows.Forms.ToolStripMenuItem импортироватьДанныеИзФайлаToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem экспортироватьРезультатыВФайлToolStripMenuItem;
     }
 }
 

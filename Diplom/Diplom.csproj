@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MathNet.Numerics, Version=4.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.5.1\lib\net461\MathNet.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
       <HintPath>..\packages\OxyPlot.Core.1.0.0\lib\net45\OxyPlot.dll</HintPath>
       <Private>True</Private>
@@ -43,6 +46,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,6 +61,7 @@
   <ItemGroup>
     <Compile Include="ChartOxyPlot.cs" />
     <Compile Include="ConnectLibrary.cs" />
+    <Compile Include="EvaluationPoisson.cs" />
     <Compile Include="ExportExcel.cs" />
     <Compile Include="FormWrapper.cs">
       <SubType>Form</SubType>
@@ -63,15 +69,16 @@
     <Compile Include="FormWrapper.Designer.cs">
       <DependentUpon>FormWrapper.cs</DependentUpon>
     </Compile>
-    <Compile Include="IChart.cs" />
-    <Compile Include="IDeclineData.cs" />
-    <Compile Include="IExport.cs" />
-    <Compile Include="IImport.cs" />
-    <Compile Include="IMethod.cs" />
+    <Compile Include="Interfaces\IChart.cs" />
+    <Compile Include="Interfaces\IDeclineData.cs" />
+    <Compile Include="Interfaces\IEvaluation.cs" />
+    <Compile Include="Interfaces\IExport.cs" />
+    <Compile Include="Interfaces\IImport.cs" />
+    <Compile Include="Interfaces\IMethod.cs" />
     <Compile Include="ImportExcel.cs" />
-    <Compile Include="MethodCusum.cs" />
+    <Compile Include="MethodModifyCUSUM.cs" />
     <Compile Include="MethodCusum2.cs" />
-    <Compile Include="NoiseDecline.cs" />
+    <Compile Include="DeclineNoise.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="View.cs" />

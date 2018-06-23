@@ -9,26 +9,26 @@ namespace Diplom
     {
         private ExcelObj.Application excelApp;
         private ExcelObj.Range ShtRange;
-        private SortedDictionary<DateTime, double> allDatesPressures;
+        private SortedDictionary<DateTime, double> allReadDatesPressures;
         private string dir;
 
         public ImportExcel()
         {
-            Settings();
+            SettingsImportExcel();
         }
 
         public ImportExcel(string d)
         {
             dir = d;
-            Settings();
+            SettingsImportExcel();
         }
 
-        public void Settings()
+        public void SettingsImportExcel()
         {
             if(excelApp == null)
                 excelApp = new ExcelObj.Application();
 
-            allDatesPressures = new SortedDictionary<DateTime, double>();
+            allReadDatesPressures = new SortedDictionary<DateTime, double>();
 
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.DefaultExt = "*.xls;*.xlsx";
@@ -43,15 +43,12 @@ namespace Diplom
             }
             else
                 ofd.FileName = dir;
-
-            ExcelObj.Workbook workbook;
-            ExcelObj.Worksheet NwSheet;
-
+            
             //open your excel file
-            workbook = excelApp.Workbooks.Open(ofd.FileName);
+            ExcelObj.Workbook workbook = excelApp.Workbooks.Open(ofd.FileName);
 
             //choose the first sheet(page)
-            NwSheet = (ExcelObj.Worksheet)workbook.Sheets.get_Item(1);
+            ExcelObj.Worksheet NwSheet = (ExcelObj.Worksheet)workbook.Sheets.get_Item(1);
 
             //select only used range(all strings)
             ShtRange = NwSheet.UsedRange;
@@ -62,12 +59,7 @@ namespace Diplom
             return ShtRange.Rows.Count;
         }
 
-        public SortedDictionary<DateTime, double> GetValues()
-        {
-            return allDatesPressures;
-        }
-
-        public SortedDictionary<DateTime, double> LoadData(int Rnum)
+        public SortedDictionary<DateTime, double> ImportData(int Rnum)
         {
             //for store read values([0] - date, [1] - pressure)
             double[] readDatePressure = new double[2];
@@ -81,12 +73,12 @@ namespace Diplom
             //specifics Excel
             DateTime fromDoubleToDate = new DateTime(1899, 12, 30).AddDays(Convert.ToDouble(readDatePressure[0]));
 
-            allDatesPressures.Add(fromDoubleToDate, readDatePressure[1]);
+            allReadDatesPressures.Add(fromDoubleToDate, readDatePressure[1]);
 
-            return allDatesPressures;
+            return allReadDatesPressures;
         }
 
-        public void DisposeResource()
+        public void DisposeImport()
         {
             if (excelApp != null)
                 excelApp.Quit();

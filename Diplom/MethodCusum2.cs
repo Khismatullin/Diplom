@@ -114,24 +114,14 @@ namespace Diplom
 
         public string NameForSeries => throw new NotImplementedException();
 
-        public string AdditionallyNameForSeries => throw new NotImplementedException();
+        public string OtherNameForSeries => throw new NotImplementedException();
 
-        public SortedDictionary<DateTime, double> GetCalculationsA()
+        public SortedDictionary<DateTime, double> GetOtherCalculations()
         {
             throw new NotImplementedException();
         }
 
-        public SortedDictionary<DateTime, double> GetCalculationsB()
-        {
-            throw new NotImplementedException();
-        }
-
-        public string SetAdditionallyNameForSeriesA()
-        {
-            throw new NotImplementedException();
-        }
-
-        public string SetAdditionallyNameForSeriesB()
+        public string SetOtherNameForSeries()
         {
             throw new NotImplementedException();
         }

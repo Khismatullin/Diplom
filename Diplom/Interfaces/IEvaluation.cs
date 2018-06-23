@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Diplom
 {
-    interface IExport
+    interface IEvaluation
     {
-        void Export(SortedDictionary<DateTime, double> d);
-        void DisposeResource();
+        double evaluation { get; }
+        void Evaluate(SortedDictionary<DateTime, double> input);
     }
 }

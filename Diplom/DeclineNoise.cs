@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Diplom
 {
-    class NoiseDecline : IDeclineData
+    class DeclineNoise : IDeclineData
     {
         private Random randOne;
         private Random randTwo;
@@ -14,7 +14,7 @@ namespace Diplom
         private double f;
         private SortedDictionary<DateTime, double> noiseData;
 
-        public NoiseDecline()
+        public DeclineNoise()
         {
             randOne = new Random();
             randTwo = new Random();
