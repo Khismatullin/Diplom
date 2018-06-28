@@ -84,6 +84,11 @@ namespace Diplom
                 return s;            
         }
 
+        static int Factorial(int x)
+        {
+            return (x == 0) ? 1 : x * Factorial(x - 1);
+        }
+
         private void buttonImportData_Click(object sender, EventArgs e)
         {
             //clear past plots if there is
@@ -115,7 +120,7 @@ namespace Diplom
             }
             
             viewModifyCUSUM = new View(new ImportExcel(importDir), declineDataC, methodModifyCUSUM, new EvaluationPoisson(), new ChartOxiPlot(this, new Point(520, 40), new Point(500, 400), methodModifyCUSUM.NameForSeries), new ExportExcel(exportDir, IsOpenExportFile));
-            viewPressure = new View(new ImportExcel(importDir), declineDataP, null, new EvaluationPoisson(), new ChartOxiPlot(this, new Point(10, 40), new Point(500, 400), null), new ExportExcel(exportDir, IsOpenExportFile));
+            viewPressure = new View(new ImportExcel(importDir), declineDataP, null, null, new ChartOxiPlot(this, new Point(10, 40), new Point(500, 400), null), new ExportExcel(exportDir, IsOpenExportFile));
 
             //for not blocking UI-thread
             Task[] tasksView = new Task[2]

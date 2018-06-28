@@ -63,14 +63,14 @@ namespace Diplom
                 return loadVal;
         }
 
-        public SortedDictionary<DateTime, double> Evaluate(SortedDictionary<DateTime, double> loadVal)
+        public SortedDictionary<DateTime, double> Evaluate(SortedDictionary<DateTime, double> calcVal)
         {
             if(evaluation != null)
             {
-                evaluation.Evaluate(loadVal);
+                evaluation.Evaluate(calcVal);
             }
 
-            return loadVal;
+            return calcVal;
         }
 
         public SortedDictionary<DateTime, double> OtherCalculations()
